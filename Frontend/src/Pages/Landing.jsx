@@ -1,9 +1,29 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TeamMemberCard from "../Components/TeamMemberCard";
 import "./Landing.css";
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [leaders, setLeaders] = useState([]);
+
+  useEffect(() => {
+    const loadTop3 = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/leaderboard", {
+          credentials: "include",
+        });
+        const data = await res.json();
+        // backend returns { leaders: [...] }
+        setLeaders((data.leaders || []).slice(0, 3));
+      } catch (err) {
+        console.error("Failed to load leaderboard:", err);
+        setLeaders([]);
+      }
+    };
+
+    loadTop3();
+  }, []);
 
   return (
     <div className="landing">
@@ -57,32 +77,42 @@ export default function Landing() {
               deployment strategies.
             </p>
           </div>
+
           <h3 className="leaderboardTitle">Shame Leaderboard (Top 3)</h3>
 
           <ul className="leaderboard">
-            <li className="lbCard">
-              <img className="lbImg" src="/placeholder1.png" alt="Alice" />
-              <div className="lbText">
-                <strong>#1 Alice</strong>
-                <span>CO₂: 12.4 kg • Water: 58 L • </span>
-              </div>
-            </li>
-
-            <li className="lbCard">
-              <img className="lbImg" src="/placeholder2.png" alt="Bob" />
-              <div className="lbText">
-                <strong>#2 Bob</strong>
-                <span>CO₂: 9.8 kg • Water: 44 L</span>
-              </div>
-            </li>
-
-            <li className="lbCard">
-              <img className="lbImg" src="/placeholder3.png" alt="Charlie" />
-              <div className="lbText">
-                <strong>#3 Charlie</strong>
-                <span>CO₂: 7.1 kg • Water: 36 L</span>
-              </div>
-            </li>
+            {leaders.length === 0 ? (
+              <li className="lbCard">
+                <div className="lbText">
+                  <strong>No leaderboard yet</strong>
+                  <span>Run a prompt to generate stats.</span>
+                </div>
+              </li>
+            ) : (
+              leaders.map((user, index) => (
+                <li className="lbCard" key={user.id || index}>
+                  {/* keep the same visual structure you had */}
+                  <img
+                    className="lbImg"
+                    src={`/placeholder${index + 1}.png`}
+                    alt={user.username}
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder1.png";
+                    }}
+                  />
+                  <div className="lbText">
+                    <strong>
+                      #{index + 1} {user.username}
+                    </strong>
+                    <span>
+                      CO₂: {user.metrics?.co2_consumption ?? 0} • Water:{" "}
+                      {user.metrics?.h2o_consumption ?? 0} • Energy:{" "}
+                      {user.metrics?.wh_consumption ?? 0}
+                    </span>
+                  </div>
+                </li>
+              ))
+            )}
           </ul>
         </section>
       </div>
