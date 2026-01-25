@@ -1,56 +1,82 @@
 import { useState } from "react";
-import "./Registration.css";
 import { useNavigate } from "react-router-dom";
+import "./Registration.css";
 
 export default function Registration() {
   const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [Username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!Username.trim() || !password.trim()) {
-      alert("Both inputs must be filled");
+    setError("");
+
+    if (!username.trim() || !password.trim()) {
+      setError("Both fields are required");
       return;
     }
 
-    const response = await fetch("http://127.0.0.1:8000/api/auth/register", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: Username,
-        password: password,
-      }),
-    });
+    setLoading(true);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      alert(error.detail || "Registration failed");
-      return;
-    } else {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/auth/register", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        setError(err.detail || "Registration failed");
+        return;
+      }
+
       navigate("/login");
+    } catch (err) {
+      setError("Server not reachable");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="Registration">
-      <input
-        type="text"
-        placeholder="Username"
-        value={Username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Enter password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+    <div className="registerPage">
+      <form onSubmit={handleSubmit} className="registerCard">
+        <h2>Create Account</h2>
+        <p className="subtitle">Sign up to get started</p>
 
-      <button type="submit">Submit</button>
-    </form>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          disabled={loading}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
+        />
+
+        {error && <div className="errorBox">{error}</div>}
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating account..." : "Register"}
+        </button>
+      </form>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-.registerPage {
+.loginPage {
   height: 100vh;
   display: flex;
   align-items: center;
@@ -6,7 +6,7 @@
   background: #f4f6fb;
 }
 
-.registerCard {
+.loginCard {
   width: 360px;
   padding: 28px;
   background: white;
@@ -17,7 +17,7 @@
   gap: 14px;
 }
 
-.registerCard h2 {
+.loginCard h2 {
   margin: 0;
   text-align: center;
 }
@@ -29,20 +29,20 @@
   margin-bottom: 10px;
 }
 
-.registerCard input {
+.loginCard input {
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 14px;
 }
 
-.registerCard input:focus {
+.loginCard input:focus {
   outline: none;
   border-color: #4f46e5;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
 }
 
-.registerCard button {
+.loginCard button {
   padding: 12px;
   background: #1f2937;
   color: white;
@@ -52,7 +52,7 @@
   cursor: pointer;
 }
 
-.registerCard button:disabled {
+.loginCard button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -63,4 +63,21 @@
   padding: 10px;
   border-radius: 8px;
   font-size: 13px;
+}
+
+.registerLink {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.registerLink a {
+  color: #4f46e5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.registerLink a:hover {
+  text-decoration: underline;
 }
