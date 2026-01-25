@@ -14,3 +14,7 @@ SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", "7200"))
 CHAT_HISTORY_WINDOW = int(os.getenv("CHAT_HISTORY_WINDOW", "10"))
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+
+COOKIE_NAME = os.getenv("COOKIE_NAME", "varuna_session")
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
+COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "lax").lower()

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -8,7 +8,8 @@ from .services.gemini import generate_reply
 
 
 from .services.mongo import get_db
-from .services.auth import register_user, authenticate_user, create_session, delete_session
+from .services.auth import register_user, authenticate_user
+from .services.sessions import cookie_settings, create_session, delete_session, get_current_user, get_optional_user
 
 app = FastAPI(title="Varuna API")
 
@@ -86,15 +87,13 @@ def login(payload: LoginRequest, response: Response):
         user = authenticate_user(db=db, username=payload.username, password=payload.password)
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
-        session_id, _expires_at = create_session(db=db, user_id=user["id"])
-        response.set_cookie(
-            key="session_id",
-            value=session_id,
-            httponly=True,
-            samesite="lax",
-            max_age=30 * 60,
+        session_id, _expires_at = create_session(
+            db=db,
+            user_id=user["id"],
+            username=user["username"],
         )
-        return {"user": user}
+        response.set_cookie(value=session_id, **cookie_settings())
+        return {"ok": True, "user": user}
     except HTTPException:
         raise
     except Exception as e:
@@ -103,12 +102,36 @@ def login(payload: LoginRequest, response: Response):
 @app.post("/api/auth/logout")
 def logout(request: Request, response: Response):
     db = get_db()
-    session_id = request.cookies.get("session_id")
+    session_id = request.cookies.get(cookie_settings()["key"])
     delete_session(db=db, session_id=session_id)
-    response.delete_cookie("session_id")
+    response.delete_cookie(cookie_settings()["key"])
     return {"ok": True}
 
+@app.get("/api/auth/me")
+def me(current_user: dict = Depends(get_current_user)):
+    return {"user": current_user}
+
 @app.post("/api/ask")
-def chat(payload: ChatRequest):
+def chat(payload: ChatRequest, request: Request):
     reply, usage = generate_reply(payload.message)
+    # Temporary 1:1 conversion; replace later with real factors
+    token_units = float(usage.get("total_tokens", 0))
+    usage["metrics"] = {
+        "co2_consumption": token_units,
+        "h2o_consumption": token_units,
+        "wh_consumption": token_units,
+    }
+    user = get_optional_user(request)
+    if user:
+        db = get_db()
+        db["users"].update_one(
+            {"username": user["username"]},
+            {
+                "$inc": {
+                    "metrics.co2_consumption": token_units,
+                    "metrics.h2o_consumption": token_units,
+                    "metrics.wh_consumption": token_units,
+                }
+            },
+        )
     return {"reply": reply, "usage": usage}

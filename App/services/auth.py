@@ -1,10 +1,7 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 import hashlib
-import secrets
 from passlib.context import CryptContext
 from pymongo.errors import DuplicateKeyError
-
-from .config import SESSION_TTL_SECONDS
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -31,6 +28,11 @@ def register_user(db, username: str, password: str) -> dict:
         "username": username,
         "password_hash": password_hash,
         "created_at": datetime.now(timezone.utc),
+        "metrics": {
+            "co2_consumption": 0,
+            "h2o_consumption": 0,
+            "wh_consumption": 0,
+        },
     }
 
     try:
@@ -59,43 +61,3 @@ def authenticate_user(db, username: str, password: str) -> dict | None:
         return None
 
     return {"id": str(user.get("_id")), "username": username}
-
-
-def create_session(db, user_id: str) -> tuple[str, datetime]:
-    session_id = secrets.token_urlsafe(32)
-    expires_at = datetime.now(timezone.utc) + timedelta(seconds=SESSION_TTL_SECONDS)
-
-    sessions = db["sessions"]
-    # TTL index to auto-expire sessions
-    sessions.create_index("expires_at", expireAfterSeconds=0)
-    sessions.insert_one(
-        {
-            "_id": session_id,
-            "user_id": user_id,
-            "expires_at": expires_at,
-        }
-    )
-    return session_id, expires_at
-
-
-def delete_session(db, session_id: str) -> None:
-    if not session_id:
-        return
-    db["sessions"].delete_one({"_id": session_id})
-
-
-def get_session_user(db, session_id: str) -> dict | None:
-    if not session_id:
-        return None
-    session = db["sessions"].find_one(
-        {
-            "_id": session_id,
-            "expires_at": {"$gt": datetime.now(timezone.utc)},
-        }
-    )
-    if not session:
-        return None
-    user = db["users"].find_one({"_id": session.get("user_id")})
-    if not user:
-        return None
-    return {"id": str(user.get("_id")), "username": user.get("username")}
