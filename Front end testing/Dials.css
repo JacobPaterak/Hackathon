@@ -1,0 +1,165 @@
+
+// ===========================
+// Dials.css (as a style tag)
+// ===========================
+const styles = `
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a2e;
+  color: white;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+}
+
+.dials-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.dial-card {
+  background: #16213e;
+  border-radius: 15px;
+  padding: 20px;
+  width: 220px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+.dial-card h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
+.gauge-wrapper {
+  position: relative;
+  width: 180px;
+  height: 90px;
+  margin: 0 auto 10px auto;
+  overflow: hidden;
+}
+
+.gauge-bg {
+  width: 180px;
+  height: 180px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.gauge-fill {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.3;
+  clip-path: polygon(0 50%, 100% 50%, 100% 0, 0 0);
+}
+
+.needle {
+  width: 4px;
+  height: 80px;
+  background: #fff;
+  position: absolute;
+  left: 88px;
+  bottom: 0;
+  transform-origin: bottom center;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  border-radius: 50% 50% 0 0;
+  z-index: 10;
+}
+
+.needle-hub {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -8px;
+  left: 82px;
+  z-index: 11;
+}
+
+.readout {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.unit {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.sim-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background-color: #e94560;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sim-btn:hover {
+  background-color: #d13852;
+}
+
+.sim-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.status-text {
+  color: #888;
+  font-style: italic;
+}
+`;
+
+// ===========================
+// Dial.jsx (Reusable Component)
+// ===========================
+const Dial = ({ title, value, unit, color, maxValue }) => {
+  const clampedValue = Math.min(Math.max(value, 0), maxValue);
+  const degrees = (clampedValue / maxValue) * 180 - 90;
+
+  return (
+    <div className="dial-card">
+      <h3>{title}</h3>
+      <div className="gauge-wrapper">
+        <div className="gauge-bg"></div>
+        <div 
+          className="gauge-fill" 
+          style={{ backgroundColor: color }}
+        ></div>
+        <div 
+          className="needle" 
+          style={{ transform: `rotate(${degrees}deg)` }}
+        ></div>
+        <div className="needle-hub"></div>
+      </div>
+      <div className="readout">
+        {clampedValue.toFixed(1)} <span className="unit">{unit}</span>
+      </div>
+    </div>
+  );
+};
