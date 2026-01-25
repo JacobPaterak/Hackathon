@@ -1,8 +1,8 @@
 #define NUM_BUZZERS 1
-const uint8_t buzzerPins[NUM_BUZZERS] = {2};
+const uint8_t buzzerPins[NUM_BUZZERS] = {5};
 
 #define NUM_LEDS 3
-const uint8_t ledPins[NUM_LEDS] = {3, 4, 10};
+const uint8_t ledPins[NUM_LEDS] = {8, 12, 13};
 
 void setup() {
   Serial.begin(115200); // Serial connection to Python
