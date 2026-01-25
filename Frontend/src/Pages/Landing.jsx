@@ -97,7 +97,7 @@ export default function Landing() {
                     src={`/placeholder${index + 1}.png`}
                     alt={user.username}
                     onError={(e) => {
-                      e.currentTarget.src = "/placeholder1.png";
+                      e.currentTarget.src = "Photo.jpg";
                     }}
                   />
                   <div className="lbText">
