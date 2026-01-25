@@ -6,6 +6,7 @@ import TypingIndicator from "../Components/TypingIndicator";
 export default function ChatPageUnLogged() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
+  const [reply, setReply] = useState("");
   const handlePrompt = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -20,7 +21,8 @@ export default function ChatPageUnLogged() {
 
     const data = await response.json();
     const reply = data.reply;
-    const total_tokens = data.total_tokens;
+    const total_usage = data.usage;
+    setReply(data.reply || "");
     setLoading(false);
   };
   return (
@@ -116,8 +118,10 @@ export default function ChatPageUnLogged() {
             <div className="chatTop"></div>
 
             <div className="chatMessages">
-              {!loading && "Agent Response Area"}
-
+              {reply && !loading && <div className="agentBubble">{reply}</div>}
+              {!reply && !loading && (
+                <div className="agentBubble">Agent Response Area</div>
+              )}
               {loading && <TypingIndicator />}
             </div>
             <form className="InputForm" onSubmit={handlePrompt}>
