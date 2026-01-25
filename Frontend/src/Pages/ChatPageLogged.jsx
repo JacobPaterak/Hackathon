@@ -62,7 +62,7 @@ export default function ChatPageLogged() {
                   key={user.id}
                   name={user.username}
                   role={`#${index + 1}`}
-                  description={`Token ${user.metrics_total}`}
+                  description={`Score ${user.metrics_total}`}
                   photoUrl=""
                 />
               ))}
