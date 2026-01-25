@@ -45,15 +45,6 @@ def serve_index():
         return FileResponse(_dist_dir / "index.html")
     raise HTTPException(status_code=404, detail="Not Found")
 
-@app.get("/{full_path:path}")
-def spa_fallback(full_path: str):
-    # Let API routes fail fast
-    if full_path.startswith("api/"):
-        raise HTTPException(status_code=404, detail="Not Found")
-    if (_dist_dir / "index.html").exists():
-        return FileResponse(_dist_dir / "index.html")
-    raise HTTPException(status_code=404, detail="Not Found")
-
 class RegisterRequest(BaseModel):
     username: str
     password: str
@@ -117,9 +108,9 @@ def chat(payload: ChatRequest, request: Request):
     # Temporary 1:1 conversion; replace later with real factors
     token_units = float(usage.get("total_tokens", 0))
     usage["metrics"] = {
-        "co2_consumption": token_units,
-        "h2o_consumption": token_units,
-        "wh_consumption": token_units,
+        "co2_consumption": token_units*0.00273,
+        "h2o_consumption": token_units*0.0236,
+        "wh_consumption": token_units*0.0218,
     }
     user = get_optional_user(request)
     if user:
@@ -128,9 +119,9 @@ def chat(payload: ChatRequest, request: Request):
             {"username": user["username"]},
             {
                 "$inc": {
-                    "metrics.co2_consumption": token_units,
-                    "metrics.h2o_consumption": token_units,
-                    "metrics.wh_consumption": token_units,
+                    "metrics.co2_consumption": token_units*0.00273,
+                    "metrics.h2o_consumption": token_units*0.0236,
+                    "metrics.wh_consumption": token_units*0.0218,
                 }
             },
         )
@@ -165,3 +156,12 @@ def leaderboard():
     ]
     results = list(db["users"].aggregate(pipeline))
     return {"leaders": results}
+
+@app.get("/{full_path:path}")
+def spa_fallback(full_path: str):
+    # Let API routes fail fast
+    if full_path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="Not Found")
+    if (_dist_dir / "index.html").exists():
+        return FileResponse(_dist_dir / "index.html")
+    raise HTTPException(status_code=404, detail="Not Found")
