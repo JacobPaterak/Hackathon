@@ -135,3 +135,33 @@ def chat(payload: ChatRequest, request: Request):
             },
         )
     return {"reply": reply, "usage": usage}
+
+@app.get("/api/leaderboard")
+def leaderboard():
+    db = get_db()
+    pipeline = [
+        {
+            "$addFields": {
+                "metrics_total": {
+                    "$add": [
+                        {"$ifNull": ["$metrics.co2_consumption", 0]},
+                        {"$ifNull": ["$metrics.h2o_consumption", 0]},
+                        {"$ifNull": ["$metrics.wh_consumption", 0]},
+                    ]
+                }
+            }
+        },
+        {"$sort": {"metrics_total": -1}},
+        {"$limit": 10},
+        {
+            "$project": {
+                "_id": 0,
+                "id": {"$toString": "$_id"},
+                "username": 1,
+                "metrics": 1,
+                "metrics_total": 1,
+            }
+        },
+    ]
+    results = list(db["users"].aggregate(pipeline))
+    return {"leaders": results}
