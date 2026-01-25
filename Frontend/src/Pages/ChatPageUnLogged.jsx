@@ -3,6 +3,7 @@ import "./ChatPage.css";
 import GaugeCircle from "../Components/GuageCircle";
 import TeamMemberCard from "../Components/TeamMemberCard";
 import TypingIndicator from "../Components/TypingIndicator";
+import { useEffect } from "react";
 
 export default function ChatPageUnLogged() {
   const [prompt, setPrompt] = useState("");
@@ -14,6 +15,15 @@ export default function ChatPageUnLogged() {
   const handlePrompt = async (e) => {
     e.preventDefault();
     setLoading(true);
+    useEffect(() => {
+      const loadLeaderboard = async () => {
+        const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard");
+        const leadersData = await leaders.json();
+        setLeaderboard(leadersData.leaders);
+      };
+
+      loadLeaderboard();
+    }, []);
 
     const response = await fetch("http://127.0.0.1:8000/api/ask", {
       method: "POST",
@@ -27,9 +37,6 @@ export default function ChatPageUnLogged() {
     const data = await response.json();
     setReply(data.reply || "");
     setUsage(data.usage || null);
-
-    const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard");
-    const leadersData = await leaders.json();
 
     setLeaderboard(leadersData.leaders || []);
     setLoading(false);
