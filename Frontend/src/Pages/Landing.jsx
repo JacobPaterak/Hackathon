@@ -57,7 +57,7 @@ export default function Landing() {
               deployment strategies.
             </p>
           </div>
-          <h3 className="leaderboardTitle">Shame Leaderboard (Top 3)</h3>
+          <h3 className="leaderboardTitle">Leaderboard (Top 3)</h3>
 
           <ul className="leaderboard">
             <li className="lbCard">

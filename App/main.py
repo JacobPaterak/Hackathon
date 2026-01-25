@@ -157,6 +157,43 @@ def leaderboard():
     results = list(db["users"].aggregate(pipeline))
     return {"leaders": results}
 
+@app.get("/api/rank")
+def rank(current_user: dict = Depends(get_current_user)):
+    db = get_db()
+    pipeline = [
+        {
+            "$addFields": {
+                "metrics_total": {
+                    "$add": [
+                        {"$ifNull": ["$metrics.co2_consumption", 0]},
+                        {"$ifNull": ["$metrics.h2o_consumption", 0]},
+                        {"$ifNull": ["$metrics.wh_consumption", 0]},
+                    ]
+                }
+            }
+        },
+        {"$sort": {"metrics_total": -1}},
+        {
+            "$group": {
+                "_id": None,
+                "users": {"$push": {"id": {"$toString": "$_id"}, "metrics_total": "$metrics_total"}},
+            }
+        },
+        {"$unwind": {"path": "$users", "includeArrayIndex": "rank_index"}},
+        {"$match": {"users.id": current_user["id"]}},
+        {
+            "$project": {
+                "_id": 0,
+                "rank": {"$add": ["$rank_index", 1]},
+                "metrics_total": "$users.metrics_total",
+            }
+        },
+    ]
+    result = list(db["users"].aggregate(pipeline))
+    if not result:
+        raise HTTPException(status_code=404, detail="User not found")
+    return result[0]
+
 @app.get("/{full_path:path}")
 def spa_fallback(full_path: str):
     # Let API routes fail fast
