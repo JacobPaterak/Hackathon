@@ -9,6 +9,7 @@ export default function ChatPageUnLogged() {
   const [loading, setLoading] = useState(false);
   const [reply, setReply] = useState("");
   const [usage, setUsage] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
 
   const handlePrompt = async (e) => {
     e.preventDefault();
@@ -26,6 +27,11 @@ export default function ChatPageUnLogged() {
     const data = await response.json();
     setReply(data.reply || "");
     setUsage(data.usage || null);
+
+    const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard");
+    const leadersData = await leaders.json();
+
+    setLeaderboard(leadersData.leaders || []);
     setLoading(false);
   };
 
@@ -47,66 +53,17 @@ export default function ChatPageUnLogged() {
           </div>
 
           <div className="leaderPreview">
-            <TeamMemberCard
-              name="Alice"
-              role="#1"
-              description="Token 10"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Bob"
-              role="#2"
-              description="Token 9"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Charlie"
-              role="#3"
-              description="Token 8"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="David"
-              role="#4"
-              description="Token 7"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Eve"
-              role="#5"
-              description="Token 6"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Frank"
-              role="#6"
-              description="Token 5"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Grace"
-              role="#7"
-              description="Token 4"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Hank"
-              role="#8"
-              description="Token 3"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Ivy"
-              role="#9"
-              description="Token 2"
-              photoUrl=""
-            />
-            <TeamMemberCard
-              name="Jules"
-              role="#10"
-              description="Token 1"
-              photoUrl=""
-            />
+            <div>
+              {leaderboard.map((user, index) => (
+                <TeamMemberCard
+                  key={user.id}
+                  name={user.username}
+                  role={`#${index + 1}`}
+                  description={`Token ${user.metrics_total}`}
+                  photoUrl=""
+                />
+              ))}
+            </div>
           </div>
 
           <button className="joinBtn">Join the Leaderboard</button>

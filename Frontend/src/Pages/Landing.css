@@ -53,10 +53,11 @@
 }
 
 .logo {
-  font-size: 160px; /* bigger V */
+  font-size: 160px;
   font-weight: 800;
   margin-bottom: 20px;
   user-select: none;
+  padding-left: 125px;
 }
 
 .loginCard {
