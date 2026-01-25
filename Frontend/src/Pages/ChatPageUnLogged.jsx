@@ -7,6 +7,7 @@ export default function ChatPageUnLogged() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [reply, setReply] = useState("");
+  const [usage, setUsage] = useState(null);
   const handlePrompt = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -16,13 +17,14 @@ export default function ChatPageUnLogged() {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ message: prompt }),
     });
 
     const data = await response.json();
     const reply = data.reply;
     const total_usage = data.usage;
     setReply(data.reply || "");
+    setUsage(total_usage || null);
     setLoading(false);
   };
   return (
