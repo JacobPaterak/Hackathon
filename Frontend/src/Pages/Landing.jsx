@@ -26,7 +26,8 @@ export default function Landing() {
       }
     };
 
-    loadTop3();
+    const intervalId = setInterval(loadTop3, 30000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -111,13 +112,13 @@ export default function Landing() {
                   {/* keep the same visual structure you had */}
                   <img
                     className="lbImg"
-                    src={`/placeholder${index + 1}.png`}
+                    src={photo}
                     alt={user.username}
                     loading="lazy"
                     onError={(e) => {
                       // prevent infinite error loops that can cause flicker
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/Photo.jpg"; // MUST be in /public
+                      e.currentTarget.src = photo;
                     }}
                   />
                   <div className="lbText">
