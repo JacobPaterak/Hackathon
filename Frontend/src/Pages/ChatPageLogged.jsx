@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./ChatPage.css";
 import GaugeCircle from "../Components/GuageCircle";
 import TeamMemberCard from "../Components/TeamMemberCard";
 import TypingIndicator from "../Components/TypingIndicator";
 import MyRankCard from "../Components/MyRankCard";
+
 export default function ChatPageLogged() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -11,35 +12,59 @@ export default function ChatPageLogged() {
   const [usage, setUsage] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [rankRefreshKey, setRankRefreshKey] = useState(0);
+
   const metrics = usage?.metrics || {};
   const round2 = (n) => Math.round((n || 0) * 100) / 100;
 
+  const loadLeaderboard = async () => {
+    try {
+      const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard", {
+        credentials: "include",
+      });
+      const leadersData = await leaders.json();
+      setLeaderboard(leadersData.leaders || []);
+    } catch (err) {
+      console.error("Failed to load leaderboard:", err);
+      setLeaderboard([]);
+    }
+  };
+
+  // ✅ Load leaderboard on first page render
+  useEffect(() => {
+    loadLeaderboard();
+    setRankRefreshKey((k) => k + 1); // ensures MyRankCard loads immediately too
+  }, []);
+
   const handlePrompt = async (e) => {
     e.preventDefault();
+    if (!prompt.trim()) return;
+
     setLoading(true);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/ask", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: prompt }),
+        credentials: "include",
+      });
 
-    const response = await fetch("http://127.0.0.1:8000/api/ask", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message: prompt }),
-      credentials: "include", // add if /api/ask needs session cookies
-    });
+      const data = await response.json();
+      setReply(data.reply || "");
+      setUsage(data.usage || null);
 
-    const data = await response.json();
-    setReply(data.reply || "");
-    setUsage(data.usage || null);
+      // ✅ Refresh leaderboard after each prompt
+      await loadLeaderboard();
 
-    const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard", {
-      credentials: "include",
-    });
-    const leadersData = await leaders.json();
-    setLeaderboard(leadersData.leaders || []);
-
-    setRankRefreshKey((k) => k + 1); // ✅ triggers MyRankCard reload
-    setLoading(false);
+      // ✅ triggers MyRankCard reload
+      setRankRefreshKey((k) => k + 1);
+    } catch (err) {
+      console.error("Prompt failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="app">
@@ -128,15 +153,27 @@ export default function ChatPageLogged() {
           <div className="gaugeStack">
             <div className="gaugeCard">
               <div className="gaugeTitle">CO2</div>
-              <GaugeCircle value={round2((metrics.co2_consumption / 68.25) * 100)} className="gauge--co2" unit="g" />
+              <GaugeCircle
+                value={round2((metrics.co2_consumption / 68.25) * 100)}
+                className="gauge--co2"
+                unit="g"
+              />
             </div>
             <div className="gaugeCard">
               <div className="gaugeTitle">H2O</div>
-              <GaugeCircle value={round2((metrics.h2o_consumption / 590) * 100)} className="gauge--h2o" unit="ml" />
+              <GaugeCircle
+                value={round2((metrics.h2o_consumption / 590) * 100)}
+                className="gauge--h2o"
+                unit="ml"
+              />
             </div>
             <div className="gaugeCard">
               <div className="gaugeTitle">W/h</div>
-              <GaugeCircle value={round2((metrics.wh_consumption / 545) * 100)} className="gauge--wh" unit="Wh" />
+              <GaugeCircle
+                value={round2((metrics.wh_consumption / 545) * 100)}
+                className="gauge--wh"
+                unit="Wh"
+              />
             </div>
           </div>
         </aside>

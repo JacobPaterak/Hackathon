@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./ChatPage.css";
 import GaugeCircle from "../Components/GuageCircle";
 import TeamMemberCard from "../Components/TeamMemberCard";
@@ -11,35 +11,53 @@ export default function ChatPageUnLogged() {
   const [reply, setReply] = useState("");
   const [usage, setUsage] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
+
   const metrics = usage?.metrics || {};
   const round2 = (n) => Math.round((n || 0) * 100) / 100;
   const navigate = useNavigate();
-  
+
+  // ✅ shared leaderboard loader (used on mount + after each prompt)
+  const loadLeaderboard = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/leaderboard");
+      const data = await res.json();
+      setLeaderboard(data.leaders || []);
+    } catch (err) {
+      console.error("Leaderboard load failed:", err);
+    }
+  };
+
+  // ✅ load leaderboard on page load
+  useEffect(() => {
+    loadLeaderboard();
+  }, []);
 
   const handlePrompt = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const response = await fetch("http://127.0.0.1:8000/api/ask", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message: prompt }),
-    });
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/ask", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: prompt }),
+      });
 
-    const data = await response.json();
-    setReply(data.reply || "");
-    setUsage(data.usage || null);
+      const data = await response.json();
+      setReply(data.reply || "");
+      setUsage(data.usage || null);
 
-    const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard");
-    const leadersData = await leaders.json();
-
-    setLeaderboard(leadersData.leaders || []);
-    setLoading(false);
+      // ✅ refresh leaderboard after each prompt submit
+      await loadLeaderboard();
+    } catch (err) {
+      console.error("Prompt failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
-
 
   return (
     <div className="app">
@@ -59,20 +77,20 @@ export default function ChatPageUnLogged() {
           </div>
 
           <div className="leaderPreview">
-            <div>
-              {leaderboard.map((user, index) => (
-                <TeamMemberCard
-                  key={user.id}
-                  name={user.username}
-                  role={`#${index + 1}`}
-                  description={`Score ${user.metrics_total}`}
-                  photoUrl=""
-                />
-              ))}
-            </div>
+            {leaderboard.map((user, index) => (
+              <TeamMemberCard
+                key={user.id}
+                name={user.username}
+                role={`#${index + 1}`}
+                description={`Score ${user.metrics_total}`}
+                photoUrl=""
+              />
+            ))}
           </div>
 
-          <button className="joinBtn" onClick={() => navigate('/login')}>Join the Leaderboard</button>
+          <button className="joinBtn" onClick={() => navigate("/login")}>
+            Join the Leaderboard
+          </button>
         </aside>
 
         {/* Center chat */}
@@ -85,11 +103,13 @@ export default function ChatPageUnLogged() {
 
             <div className="chatMessages">
               {reply && !loading && <div className="agentBubble">{reply}</div>}
+
               {!reply && !loading && (
                 <div className="agentBubble placeholder">
                   See how much your data costs!
                 </div>
               )}
+
               {loading && (
                 <div className="chatLoading">
                   <TypingIndicator />
@@ -97,7 +117,6 @@ export default function ChatPageUnLogged() {
               )}
             </div>
 
-            {/* NOTE: className changed to "inputForm" to match CSS */}
             <form className="inputForm" onSubmit={handlePrompt}>
               <input
                 placeholder="Prompt..."
@@ -127,15 +146,29 @@ export default function ChatPageUnLogged() {
           <div className="gaugeStack">
             <div className="gaugeCard">
               <div className="gaugeTitle">CO2</div>
-              <GaugeCircle value={round2((metrics.co2_consumption / 45.5) * 100)} className="gauge--co2" unit="g" />
+              <GaugeCircle
+                value={round2((metrics.co2_consumption / 45.5) * 100)}
+                className="gauge--co2"
+                unit="g"
+              />
             </div>
+
             <div className="gaugeCard">
               <div className="gaugeTitle">H2O</div>
-              <GaugeCircle value={round2((metrics.h2o_consumption / 210) * 100)} className="gauge--h2o" unit="ml" />
+              <GaugeCircle
+                value={round2((metrics.h2o_consumption / 210) * 100)}
+                className="gauge--h2o"
+                unit="ml"
+              />
             </div>
+
             <div className="gaugeCard">
               <div className="gaugeTitle">W/h</div>
-              <GaugeCircle value={round2((metrics.wh_consumption / 181.66) * 100)} className="gauge--wh" unit="Wh" />
+              <GaugeCircle
+                value={round2((metrics.wh_consumption / 181.66) * 100)}
+                className="gauge--wh"
+                unit="Wh"
+              />
             </div>
           </div>
         </aside>
