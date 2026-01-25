@@ -1,0 +1,34 @@
+
+Step 1: Deploy the Flask Server on Your VM
+First, SSH into your VM at 45.77.202.55:
+bashssh root@45.77.202.55
+Then install Flask if you haven't already:
+bashpip3 install flask
+Upload your command_server.py to the VM and run it:
+bashpython3 command_server.py
+This will start the Flask server on port 8000.
+
+Step 2: Update Your Local Agent Code
+On your local machine, update agent.py to use your actual VM IP address. Replace YOUR_VM_IP with your VM's IP:
+pythonCLOUD_URL = "http://45.77.202.55:8000"
+Also, make sure your Arduino COM port is correct (you have COM8 - verify this in Device Manager on Windows).
+
+Step 3: Test the Connection
+You can test if the server is accessible from your local machine:
+bashcurl http://45.77.202.55:8000/get
+If this times out, you need to configure your VM's firewall to allow incoming connections on port 8000.
+
+Step 4: Configure VM Firewall (if needed)
+On your Ubuntu VM, allow port 8000:
+bashsudo ufw allow 8000
+sudo ufw status
+
+Step 5: Run Everything
+
+On the VM: Keep command_server.py running
+On your local machine: Double-click run.bat or run python agent.py
+
+How to Send Commands
+To send a command to your Arduino, make a POST request to your VM:
+bashcurl -X POST http://45.77.202.55:8000/set -H "Content-Type: application/json" -d '{"command":"PLAY"}'
+Your local agent will pick up this command, send it to the Arduino, wait for "DONE", and report back to the server.
