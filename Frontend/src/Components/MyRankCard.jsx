@@ -75,7 +75,7 @@ export default function MyRankCard({
     <TeamMemberCard
       name={name}
       role={`#${rank}`}
-      description={`Token ${metricsTotal}`}
+      description={`Score ${metricsTotal}`}
       photoUrl={photoUrl}
     />
   );

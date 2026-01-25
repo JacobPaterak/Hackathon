@@ -69,7 +69,7 @@ export default function ChatPageLogged() {
             </div>
 
             <div className="myRankWrapper">
-              <MyRankCard refreshkey={rankRefreshKey} />
+              <MyRankCard refreshKey={rankRefreshKey} />
             </div>
           </div>
         </aside>
