@@ -3,7 +3,8 @@ import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
 import Registration from "./Pages/Registration.jsx";
 import Landing from "./Pages/Landing";
 import Login from "./Pages/Login.jsx";
-import ChatPage from "./Pages/ChatPage.jsx";
+import ChatPageUnlogged from "./Pages/ChatPageUnLogged.jsx";
+import ChatPageLogged from "./Pages/ChatPageLogged.jsx";
 function App() {
   return (
     <>
@@ -12,7 +13,8 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Registration />} />
-          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chatUnLogged" element={<ChatPageUnlogged />} />
+          <Route path="/chatLogged" element={<ChatPageLogged />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -30,9 +30,9 @@ export default function Registration() {
       const error = await response.json().catch(() => ({}));
       alert(error.detail || "Registration failed");
       return;
+    } else {
+      navigate("/login");
     }
-
-    navigate("/login");
   };
 
   return (

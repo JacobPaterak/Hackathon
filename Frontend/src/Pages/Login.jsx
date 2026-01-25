@@ -29,6 +29,8 @@ function Login() {
       const error = await response.json().catch(() => ({}));
       alert(error.detail || "Login failed");
       return;
+    } else {
+      navigate("/chatUnlogged");
     }
   };
 
