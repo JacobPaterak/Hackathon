@@ -3,6 +3,7 @@ import "./ChatPage.css";
 import GaugeCircle from "../Components/GuageCircle";
 import TeamMemberCard from "../Components/TeamMemberCard";
 import TypingIndicator from "../Components/TypingIndicator";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatPageUnLogged() {
   const [prompt, setPrompt] = useState("");
@@ -10,6 +11,10 @@ export default function ChatPageUnLogged() {
   const [reply, setReply] = useState("");
   const [usage, setUsage] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
+  const metrics = usage?.metrics || {};
+  const round2 = (n) => Math.round((n || 0) * 100) / 100;
+  const navigate = useNavigate();
+  
 
   const handlePrompt = async (e) => {
     e.preventDefault();
@@ -35,12 +40,13 @@ export default function ChatPageUnLogged() {
     setLoading(false);
   };
 
+
   return (
     <div className="app">
       <header className="topbar">
         <div className="topbarInner">
           <h1>Varuna</h1>
-          <div className="topbarTag">AI Climate Tracker</div>
+          <div className="topbarTag">AI METRICS</div>
         </div>
       </header>
 
@@ -59,14 +65,14 @@ export default function ChatPageUnLogged() {
                   key={user.id}
                   name={user.username}
                   role={`#${index + 1}`}
-                  description={`Token ${user.metrics_total}`}
+                  description={`Score ${user.metrics_total}`}
                   photoUrl=""
                 />
               ))}
             </div>
           </div>
 
-          <button className="joinBtn">Join the Leaderboard</button>
+          <button className="joinBtn" onClick={() => navigate('/login')}>Join the Leaderboard</button>
         </aside>
 
         {/* Center chat */}
@@ -81,10 +87,14 @@ export default function ChatPageUnLogged() {
               {reply && !loading && <div className="agentBubble">{reply}</div>}
               {!reply && !loading && (
                 <div className="agentBubble placeholder">
-                  Agent Response Area
+                  See how much your data costs!
                 </div>
               )}
-              {loading && <TypingIndicator />}
+              {loading && (
+                <div className="chatLoading">
+                  <TypingIndicator />
+                </div>
+              )}
             </div>
 
             {/* NOTE: className changed to "inputForm" to match CSS */}
@@ -111,18 +121,21 @@ export default function ChatPageUnLogged() {
         <aside className="right">
           <div className="panelHeader">
             <h3>Impact</h3>
-            <span className="panelSub">This session</span>
+            <span className="panelSub">Prompt Scan</span>
           </div>
 
           <div className="gaugeStack">
             <div className="gaugeCard">
-              <GaugeCircle value={15} />
+              <div className="gaugeTitle">CO2</div>
+              <GaugeCircle value={round2((metrics.co2_consumption / 45.5) * 100)} className="gauge--co2" unit="g" />
             </div>
             <div className="gaugeCard">
-              <GaugeCircle value={55} />
+              <div className="gaugeTitle">H2O</div>
+              <GaugeCircle value={round2((metrics.h2o_consumption / 210) * 100)} className="gauge--h2o" unit="ml" />
             </div>
             <div className="gaugeCard">
-              <GaugeCircle value={92} />
+              <div className="gaugeTitle">W/h</div>
+              <GaugeCircle value={round2((metrics.wh_consumption / 181.66) * 100)} className="gauge--wh" unit="Wh" />
             </div>
           </div>
         </aside>

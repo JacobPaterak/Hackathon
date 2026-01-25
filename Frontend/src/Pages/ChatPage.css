@@ -23,6 +23,7 @@
     Segoe UI,
     Roboto,
     Arial;
+  padding-bottom: 15px;
 }
 
 /* Header */
@@ -64,6 +65,7 @@
   grid-template-columns: 280px 1fr 260px;
   gap: 14px;
   padding: 14px;
+  padding-bottom: 29px;
 }
 
 /* Panels (left/right) */
@@ -177,22 +179,33 @@
   border-radius: 14px;
   background: #fcfcfc;
   overflow: auto;
+  display: block;
   min-height: 0;
 }
 
 .agentBubble {
-  display: inline-block;
+  display: block;
   max-width: 90%;
   padding: 10px 12px;
   border-radius: 14px;
   border: 1px solid var(--border);
   background: var(--panel);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 20px;
+  line-height: 1.5;
+  font-family: "Georgia", "Times New Roman", serif;
+  text-align: center;
+  margin: 0 auto;
 }
 
 .agentBubble.placeholder {
   color: var(--muted);
+}
+
+.chatLoading {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Composer */

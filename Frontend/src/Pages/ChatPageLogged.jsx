@@ -11,6 +11,8 @@ export default function ChatPageLogged() {
   const [usage, setUsage] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [rankRefreshKey, setRankRefreshKey] = useState(0);
+  const metrics = usage?.metrics || {};
+  const round2 = (n) => Math.round((n || 0) * 100) / 100;
 
   const handlePrompt = async (e) => {
     e.preventDefault();
@@ -86,10 +88,14 @@ export default function ChatPageLogged() {
               {reply && !loading && <div className="agentBubble">{reply}</div>}
               {!reply && !loading && (
                 <div className="agentBubble placeholder">
-                  Agent Response Area
+                  See how much your data costs!
                 </div>
               )}
-              {loading && <TypingIndicator />}
+              {loading && (
+                <div className="chatLoading">
+                  <TypingIndicator />
+                </div>
+              )}
             </div>
 
             {/* NOTE: className changed to "inputForm" to match CSS */}
@@ -116,18 +122,21 @@ export default function ChatPageLogged() {
         <aside className="right">
           <div className="panelHeader">
             <h3>Impact</h3>
-            <span className="panelSub">This session</span>
+            <span className="panelSub">Prompt Scan</span>
           </div>
 
           <div className="gaugeStack">
             <div className="gaugeCard">
-              <GaugeCircle value={15} />
+              <div className="gaugeTitle">CO2</div>
+              <GaugeCircle value={round2((metrics.co2_consumption / 68.25) * 100)} className="gauge--co2" unit="g" />
             </div>
             <div className="gaugeCard">
-              <GaugeCircle value={55} />
+              <div className="gaugeTitle">H2O</div>
+              <GaugeCircle value={round2((metrics.h2o_consumption / 590) * 100)} className="gauge--h2o" unit="ml" />
             </div>
             <div className="gaugeCard">
-              <GaugeCircle value={92} />
+              <div className="gaugeTitle">W/h</div>
+              <GaugeCircle value={round2((metrics.wh_consumption / 545) * 100)} className="gauge--wh" unit="Wh" />
             </div>
           </div>
         </aside>

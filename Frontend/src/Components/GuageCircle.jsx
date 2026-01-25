@@ -1,5 +1,5 @@
 import "./GuageCircle.css";
-export default function GaugeCircle({ value = 0, size = 200 }) {
+export default function GaugeCircle({ value = 0, size = 200, className = "", unit = "%" }) {
   const v = Math.max(0, Math.min(100, value));
 
   // SVG geometry (viewBox 0..100)
@@ -25,7 +25,7 @@ export default function GaugeCircle({ value = 0, size = 200 }) {
   const progLen = (v / 100) * arcLen; // progress along the arc
 
   return (
-    <div className="gauge" style={{ width: size, height: size }}>
+    <div className={`gauge ${className}`} style={{ width: size, height: size }}>
       <svg viewBox="0 0 100 100" className="gaugeSvg">
         {/* background arc */}
         <circle
@@ -70,8 +70,9 @@ export default function GaugeCircle({ value = 0, size = 200 }) {
         <circle cx={cx} cy={cy} r="4" fill="#111" />
 
         {/* value label */}
-        <text x="50" y="56" dx="-18" textAnchor="middle" fontSize="16" fill="#111">
-          {v}%
+        <text x="50" y="56" dx="-26" textAnchor="middle" fontSize="13" fill="#111">
+          {v}
+          {unit}
         </text>
       </svg>
     </div>

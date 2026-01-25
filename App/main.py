@@ -150,7 +150,7 @@ def leaderboard():
                 "id": {"$toString": "$_id"},
                 "username": 1,
                 "metrics": 1,
-                "metrics_total": 1,
+                "metrics_total": {"$round": ["$metrics_total", 2]},
             }
         },
     ]
@@ -185,7 +185,7 @@ def rank(current_user: dict = Depends(get_current_user)):
             "$project": {
                 "_id": 0,
                 "rank": {"$add": ["$rank_index", 1]},
-                "metrics_total": "$users.metrics_total",
+                "metrics_total": {"$round": ["$users.metrics_total", 2]},
             }
         },
     ]
