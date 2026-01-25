@@ -1,5 +1,261 @@
-.team-members {
+.landing {
+  min-height: 100vh;
+  padding: 24px;
+  background: #f6f7fb;
+
   display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding-top: 60px;
+  overflow: hidden;
+}
+
+.landing-grid {
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+
+.panel {
+  background: transparent;
+  border: none;
+  padding: 16px;
+}
+.panel-title {
+  font-size: 28px; /* bigger title */
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Team card borders like your sketch */
+.team-card {
   border: 2px solid #000;
   border-radius: 10px;
+  padding: 10px;
+}
+
+/* Center column */
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.logo {
+  font-size: 160px; /* bigger V */
+  font-weight: 800;
+  margin-bottom: 20px;
+  user-select: none;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 260px;
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+
+.loginTitle {
+  margin: 0 0 10px;
+}
+.loginBtn {
+  padding: 12px 32px; /* bigger button */
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  background: #111;
+  color: white;
+  cursor: pointer;
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.loginBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Right column description lines */
+.descLines p {
+  margin: 0 0 10px;
+  border-bottom: 1px solid #cfcfcf;
+  padding-bottom: 8px;
+}
+.team-card {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: white;
+
+  /* Shadow */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+  /* Smooth hover animation */
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.team-card {
+  display: flex;
+  gap: 12px;
+
+  padding: 12px 14px; /* smaller padding */
+  border-radius: 14px;
+  background: white;
+
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.team-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  background: #e9e9e9;
+  flex-shrink: 0;
+}
+
+.team-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.team-header {
+  line-height: 1.1;
+}
+
+.team-name {
+  font-size: 18px;
+}
+
+.team-role {
+  font-size: 13px;
+}
+.team-members {
+  gap: 14px;
+}
+.team-desc {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+.panel:first-child {
+  margin-left: -180px;
+}
+.panel:last-child {
+  margin-right: -180px;
+}
+.chatBtn {
+  padding: 10px 26px;
+  font-size: 15px;
+  border-radius: 12px;
+  border: 1.5px solid #111;
+  background: transparent;
+  color: #111;
+  cursor: pointer;
+  margin-bottom: 12px;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.chatBtn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+.leaderboardBtn {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  background: #111;
+  color: white;
+  cursor: pointer;
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.leaderboardBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+.leaderboardTitle {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.leaderboard {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.lbCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: white;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+.lbImg {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #e9e9e9;
+  flex-shrink: 0;
+}
+.lbText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.lbText span {
+  color: #555;
+  font-size: 13px;
+}
+.leaderboard li {
+  background: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  font-size: 14px;
 }
