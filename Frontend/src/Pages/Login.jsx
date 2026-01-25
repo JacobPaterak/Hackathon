@@ -41,7 +41,7 @@ export default function Login() {
         return;
       }
 
-      navigate("/chatUnlogged");
+      navigate("/chatlogged");
     } catch (err) {
       setError("Server not reachable");
     } finally {
