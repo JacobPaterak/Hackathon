@@ -287,6 +287,22 @@
   color: var(--muted);
   line-height: 1.25;
 }
+.leaderPreview {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.leaderList {
+  overflow-y: auto;
+}
+
+/* Push rank card to bottom */
+.myRankWrapper {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
 
 /* Responsive */
 @media (max-width: 980px) {

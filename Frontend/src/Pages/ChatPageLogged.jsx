@@ -1,111 +1,130 @@
+import { useState } from "react";
 import "./ChatPage.css";
 import GaugeCircle from "../Components/GuageCircle";
 import TeamMemberCard from "../Components/TeamMemberCard";
-export default function ChatPageUnLogged() {
+import TypingIndicator from "../Components/TypingIndicator";
+import MyRankCard from "../Components/MyRankCard";
+export default function ChatPageLogged() {
+  const [prompt, setPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [reply, setReply] = useState("");
+  const [usage, setUsage] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+
+  const handlePrompt = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const response = await fetch("http://127.0.0.1:8000/api/ask", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: prompt }),
+    });
+
+    const data = await response.json();
+    setReply(data.reply || "");
+    setUsage(data.usage || null);
+    const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard");
+    const leadersData = await leaders.json();
+
+    setLeaderboard(leadersData.leaders || []);
+    setLoading(false);
+  };
+
   return (
     <div className="app">
-      {/* Header */}
       <header className="topbar">
-        <h1>Varuna</h1>
+        <div className="topbarInner">
+          <h1>Varuna</h1>
+          <div className="topbarTag">AI Climate Tracker</div>
+        </div>
       </header>
 
       <div className="layout">
         {/* Left panel */}
         <aside className="left">
-          <h3>Top 10 Leaderboard</h3>
-
-          <div className="leaderPreview">
-            <TeamMemberCard
-              name="Alice"
-              role="#1"
-              description="Token 10"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Bob"
-              role="#2"
-              description="Token 9"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Charlie"
-              role="#3"
-              description="Token 8"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="David"
-              role="#4"
-              description="Token 7"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Eve"
-              role="#5"
-              description="Token 6"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Frank"
-              role="#6"
-              description="Token 5"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Grace"
-              role="#7"
-              description="Token 4"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Hank"
-              role="#8"
-              description="Token 3"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Ivy"
-              role="#9"
-              description="Token 2"
-              photoUrl=""
-            />
-
-            <TeamMemberCard
-              name="Jules"
-              role="#10"
-              description="Token 1"
-              photoUrl=""
-            />
+          <div className="panelHeader">
+            <h3>Leaderboard</h3>
+            <span className="panelSub">Top 10</span>
           </div>
+          <div className="leaderPreview">
+            <div className="leaderList">
+              {leaderboard.map((user, index) => (
+                <TeamMemberCard
+                  key={user.id}
+                  name={user.username}
+                  role={`#${index + 1}`}
+                  description={`Token ${user.metrics_total}`}
+                  photoUrl=""
+                />
+              ))}
+            </div>
 
-          <button className="joinBtn">Join the Leaderboard</button>
+            <div className="myRankWrapper">
+              <MyRankCard />
+            </div>
+          </div>
         </aside>
 
         {/* Center chat */}
         <main className="center">
           <div className="chatBox">
-            <div className="chatTop"></div>
+            <div className="chatHeader">
+              <div className="chatTitle">Chat</div>
+              <div className="chatHint">Ask anything • we track impact</div>
+            </div>
 
-            <div className="chatMessages">Agent Response Area</div>
+            <div className="chatMessages">
+              {reply && !loading && <div className="agentBubble">{reply}</div>}
+              {!reply && !loading && (
+                <div className="agentBubble placeholder">
+                  Agent Response Area
+                </div>
+              )}
+              {loading && <TypingIndicator />}
+            </div>
 
-            <input placeholder="Prompt..." className="promptInput" />
+            {/* NOTE: className changed to "inputForm" to match CSS */}
+            <form className="inputForm" onSubmit={handlePrompt}>
+              <input
+                placeholder="Prompt..."
+                className="promptInput"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                disabled={loading}
+              />
+              <button
+                className="sendBtn"
+                type="submit"
+                disabled={loading || !prompt.trim()}
+              >
+                Send
+              </button>
+            </form>
           </div>
         </main>
 
-        {/* Right users */}
+        {/* Right panel */}
         <aside className="right">
-          {" "}
-          <GaugeCircle value={15} />
-          <GaugeCircle value={55} />
-          <GaugeCircle value={92} />
+          <div className="panelHeader">
+            <h3>Impact</h3>
+            <span className="panelSub">This session</span>
+          </div>
+
+          <div className="gaugeStack">
+            <div className="gaugeCard">
+              <GaugeCircle value={15} />
+            </div>
+            <div className="gaugeCard">
+              <GaugeCircle value={55} />
+            </div>
+            <div className="gaugeCard">
+              <GaugeCircle value={92} />
+            </div>
+          </div>
         </aside>
       </div>
     </div>
