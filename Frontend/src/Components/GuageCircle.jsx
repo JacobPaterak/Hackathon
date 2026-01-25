@@ -70,7 +70,7 @@ export default function GaugeCircle({ value = 0, size = 200 }) {
         <circle cx={cx} cy={cy} r="4" fill="#111" />
 
         {/* value label */}
-        <text x="50" y="56" textAnchor="middle" fontSize="16" fill="#111">
+        <text x="50" y="56" dx="-18" textAnchor="middle" fontSize="16" fill="#111">
           {v}%
         </text>
       </svg>
