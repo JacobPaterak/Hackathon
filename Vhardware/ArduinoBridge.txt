@@ -1,0 +1,11 @@
+import serial
+import time
+
+arduino = serial.Serial('COM3', 115200, timeout=1)
+time.sleep(2)  # Allow Arduino to reset
+
+arduino.write(b'PLAY\n')  # Send command
+while True:
+    line = arduino.readline().decode().strip()
+    if line == "DONE":
+        break
