@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TeamMemberCard from "../Components/TeamMemberCard";
 import "./Landing.css";
+import img0 from "../assets/image0.jpg";
+import img1 from "../assets/image1.jpg";
+import img2 from "../assets/image2.jpg";
+import img3 from "../assets/image3.jpg";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -32,10 +36,23 @@ export default function Landing() {
         <section className="panel">
           <h2 className="panel-title">Meet the Team</h2>
           <div className="stack">
-            <TeamMemberCard name="Aadi" role="Mascot" />
-            <TeamMemberCard name="Jacob" role="Front-End Architect" />
-            <TeamMemberCard name="Yousef" role="Electrical Engineer" />
-            <TeamMemberCard name="Josh" role="Backend Developer" />
+            <TeamMemberCard photoUrl={img0} name="Aadi" role="Mascot" />
+            <TeamMemberCard
+              photoUrl={img3}
+              name="Jacob"
+              role="Front-End Architect"
+            />
+            <TeamMemberCard
+              img
+              photoUrl={img2}
+              name="Yousef"
+              role="Electrical Engineer"
+            />
+            <TeamMemberCard
+              photoUrl={img1}
+              name="Josh"
+              role="Backend Developer"
+            />
           </div>
         </section>
 
