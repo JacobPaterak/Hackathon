@@ -10,6 +10,7 @@ export default function ChatPageLogged() {
   const [reply, setReply] = useState("");
   const [usage, setUsage] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [rankRefreshKey, setRankRefreshKey] = useState(0);
 
   const handlePrompt = async (e) => {
     e.preventDefault();
@@ -22,18 +23,22 @@ export default function ChatPageLogged() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ message: prompt }),
+      credentials: "include", // add if /api/ask needs session cookies
     });
 
     const data = await response.json();
     setReply(data.reply || "");
     setUsage(data.usage || null);
-    const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard");
-    const leadersData = await leaders.json();
 
+    const leaders = await fetch("http://127.0.0.1:8000/api/leaderboard", {
+      credentials: "include",
+    });
+    const leadersData = await leaders.json();
     setLeaderboard(leadersData.leaders || []);
+
+    setRankRefreshKey((k) => k + 1); // ✅ triggers MyRankCard reload
     setLoading(false);
   };
-
   return (
     <div className="app">
       <header className="topbar">
@@ -64,7 +69,7 @@ export default function ChatPageLogged() {
             </div>
 
             <div className="myRankWrapper">
-              <MyRankCard />
+              <MyRankCard refreshkey={rankRefreshKey} />
             </div>
           </div>
         </aside>
