@@ -12,10 +12,10 @@ export default function Landing() {
         <section className="panel">
           <h2 className="panel-title">Meet the Team</h2>
           <div className="stack">
-            <TeamMemberCard name="Alice" role="Developer" />
-            <TeamMemberCard name="Bob" role="Designer" />
-            <TeamMemberCard name="Charlie" role="Project Manager" />
-            <TeamMemberCard name="David" role="Tester" />
+            <TeamMemberCard name="Aadi" role="Mascot" />
+            <TeamMemberCard name="Jacob" role="Front-End Architect" />
+            <TeamMemberCard name="Yousef" role="Electrical Engineer" />
+            <TeamMemberCard name="Josh" role="Backend Developer" />
           </div>
         </section>
 
@@ -23,7 +23,7 @@ export default function Landing() {
         <section className="center">
           <div className="logo">V</div>
 
-          <button className="chatBtn" onClick={() => navigate("/chat")}>
+          <button className="chatBtn" onClick={() => navigate("/chatUnlogged")}>
             Chat
           </button>
 

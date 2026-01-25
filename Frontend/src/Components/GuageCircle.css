@@ -4,13 +4,22 @@
   position: relative;
 }
 
+/* Arc ring: only 240deg is visible, aligned with needle sweep */
 .gaugeRing {
   width: 56px;
   height: 56px;
   border-radius: 50%;
+  position: relative;
+
+  background: conic-gradient(
+    from -120deg,
+    #111 0deg var(--progress),
+    #e6e6e6 var(--progress) 240deg,
+    transparent 240deg 360deg
+  );
 }
 
-/* cut out the center to make it a ring */
+/* Cut out the center to make it a ring */
 .gaugeRing::after {
   content: "";
   position: absolute;
@@ -19,20 +28,23 @@
   border-radius: 50%;
 }
 
-/* needle rotates around center */
+/* Needle rotates around the center, aligned with same -120..+120 sweep */
 .needle {
   position: absolute;
   left: 50%;
   top: 50%;
-
   width: 24px;
   height: 2px;
   background: #111;
 
+  /* center the base at the gauge center, then rotate */
+  transform: translate(-50%, -50%) rotate(var(--angle));
   transform-origin: 0% 50%;
-} /* rotate from base */
 
-/* little center dot */
+  transition: transform 500ms ease;
+}
+
+/* Little center dot */
 .needle::after {
   content: "";
   position: absolute;
@@ -43,6 +55,7 @@
   background: #111;
   border-radius: 50%;
 }
+
 .gaugeValue {
   position: absolute;
   inset: 0;
