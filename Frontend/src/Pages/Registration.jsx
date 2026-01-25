@@ -7,23 +7,31 @@ export default function Registration() {
   const [password, setPassword] = useState("");
   const [Username, setUsername] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!Username.trim() || !password.trim()) {
       alert("Both inputs must be filled");
       return;
     }
 
-    fetch("http://localhost:8000/api/auth/register", {
+    const response = await fetch("http://127.0.0.1:8000/api/auth/register", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: { Username },
-        password: { password },
+        username: Username,
+        password: password,
       }),
     });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      alert(error.detail || "Registration failed");
+      return;
+    }
+
     navigate("/login");
   };
 

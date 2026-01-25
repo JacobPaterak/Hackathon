@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
@@ -8,6 +9,18 @@ from .services.mongo import get_db
 from .services.auth import register_user
 
 app = FastAPI(title="Varuna API")
+
+# CORS for local dev + production UI (adjust origins as needed)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Serve Frontend/dist only (built assets)
 _frontend_dir = Path(__file__).resolve().parents[1] / "Frontend"
@@ -25,6 +38,15 @@ def serve_vite_svg():
 
 @app.get("/")
 def serve_index():
+    if (_dist_dir / "index.html").exists():
+        return FileResponse(_dist_dir / "index.html")
+    raise HTTPException(status_code=404, detail="Not Found")
+
+@app.get("/{full_path:path}")
+def spa_fallback(full_path: str):
+    # Let API routes fail fast
+    if full_path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="Not Found")
     if (_dist_dir / "index.html").exists():
         return FileResponse(_dist_dir / "index.html")
     raise HTTPException(status_code=404, detail="Not Found")
