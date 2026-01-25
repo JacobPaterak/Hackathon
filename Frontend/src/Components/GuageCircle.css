@@ -1,0 +1,52 @@
+.gauge {
+  width: 56px;
+  height: 56px;
+  position: relative;
+}
+
+.gaugeRing {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+
+/* cut out the center to make it a ring */
+.gaugeRing::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  background: white; /* match your page bg */
+  border-radius: 50%;
+}
+
+/* needle rotates around center */
+.needle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 24px;
+  height: 2px;
+  background: #111;
+
+  transform-origin: 0% 50%;
+} /* rotate from base */
+
+/* little center dot */
+.needle::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  background: #111;
+  border-radius: 50%;
+}
+.gaugeValue {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}

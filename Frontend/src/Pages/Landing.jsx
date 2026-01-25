@@ -64,7 +64,7 @@ export default function Landing() {
               <img className="lbImg" src="/placeholder1.png" alt="Alice" />
               <div className="lbText">
                 <strong>#1 Alice</strong>
-                <span>CO₂: 12.4 kg • Water: 58 L</span>
+                <span>CO₂: 12.4 kg • Water: 58 L • </span>
               </div>
             </li>
 
