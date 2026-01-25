@@ -12,6 +12,18 @@ export default function Registration() {
       alert("Both inputs must be filled");
       return;
     }
+
+    fetch("http://localhost:8000/api/auth/register", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: { Username },
+        password: { password },
+      }),
+    });
     navigate("/login");
   };
 
