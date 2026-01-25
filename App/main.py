@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,7 +6,7 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from .services.mongo import get_db
-from .services.auth import register_user
+from .services.auth import register_user, authenticate_user, create_session, delete_session
 
 app = FastAPI(title="Varuna API")
 
@@ -55,6 +55,10 @@ class RegisterRequest(BaseModel):
     username: str
     password: str
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
 @app.get("/health")
 def health_check() -> dict:
     return {"status": "ok"}
@@ -69,3 +73,32 @@ def register(payload: RegisterRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error:{e}")
+
+@app.post("/api/auth/login")
+def login(payload: LoginRequest, response: Response):
+    db = get_db()
+    try:
+        user = authenticate_user(db=db, username=payload.username, password=payload.password)
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        session_id, _expires_at = create_session(db=db, user_id=user["id"])
+        response.set_cookie(
+            key="session_id",
+            value=session_id,
+            httponly=True,
+            samesite="lax",
+            max_age=30 * 60,
+        )
+        return {"user": user}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error:{e}")
+
+@app.post("/api/auth/logout")
+def logout(request: Request, response: Response):
+    db = get_db()
+    session_id = request.cookies.get("session_id")
+    delete_session(db=db, session_id=session_id)
+    response.delete_cookie("session_id")
+    return {"ok": True}
