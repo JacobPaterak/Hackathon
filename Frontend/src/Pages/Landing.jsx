@@ -96,8 +96,11 @@ export default function Landing() {
                     className="lbImg"
                     src={`/placeholder${index + 1}.png`}
                     alt={user.username}
+                    loading="lazy"
                     onError={(e) => {
-                      e.currentTarget.src = "Photo.jpg";
+                      // prevent infinite error loops that can cause flicker
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/Photo.jpg"; // MUST be in /public
                     }}
                   />
                   <div className="lbText">
