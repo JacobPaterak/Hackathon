@@ -4,6 +4,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from pydantic import BaseModel
+from .services.gemini import generate_reply
+
 
 from .services.mongo import get_db
 from .services.auth import register_user, authenticate_user, create_session, delete_session
@@ -59,6 +61,9 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class ChatRequest(BaseModel):
+    message: str
+
 @app.get("/health")
 def health_check() -> dict:
     return {"status": "ok"}
@@ -102,3 +107,8 @@ def logout(request: Request, response: Response):
     delete_session(db=db, session_id=session_id)
     response.delete_cookie("session_id")
     return {"ok": True}
+
+@app.post("/api/ask")
+def chat(payload: ChatRequest):
+    reply, usage = generate_reply(payload.message)
+    return {"reply": reply, "usage": usage}

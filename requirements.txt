@@ -1,8 +1,10 @@
 fastapi
-uvicorn[standard]
+uvicorn>=0.24
+websockets>=13,<15.1.0
 pymongo[srv]
 python-dotenv
 passlib[bcrypt]
 bcrypt<4
 pydantic
 certifi
+google-genai
